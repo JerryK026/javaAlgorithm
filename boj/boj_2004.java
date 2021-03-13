@@ -13,26 +13,19 @@ public class boj_2004 {
         int two = 0;
         int five = 0;
 
-        int start_2 = n-m;
-        int start_5 = n-m;
-        while (start_2 % 2 != 0) start_2++;
-        while (start_5 % 5 != 0) start_5++;
-
-        for(int i = 2; i < n + 1; i *= 2) {
-            for(int j = start_2; j < n + 1; j += i) two++;
+        for(int i = 2; i <= n; i *= 2) two += (n - m) / i + 1;
+        for(int i = 5; i <= n; i *= 5) five += (n - m) / i + 1;
+        for(int i = 2; i <= m; i *= 2) {
+            if(two <= 0) break;
+            two -= (m - i) / i + 1;
         }
-        for(int i = 5; i < n + 1; i *= 5) {
-            for(int j = start_5; j < n + 1; j += i) five++;
-        }
-        for(int i = 2; i < m + 1; i *= 2) {
-            for(int j = i; j < m + 1; j += i) two--;
-        }
-        for(int i = 5; i < m + 1; i *= 5) {
-            for(int j = i; j < m + 1; j += i) five--;
+        for(int i = 5; i <= m; i *= 5) {
+            if(two <= 0 || five <= 0) break;
+            five -= (m - i) / i + 1;
         }
 
-        int ten = (two < five) ? five : two;
-        bw.write(String.valueOf(ten));
+        int ten = (two < five) ? two : five;
+        bw.write(String.valueOf((ten < 0) ? 0 : ten));
         bw.flush();
         bw.close();
     }
