@@ -1,8 +1,6 @@
 package boj;
 
 import java.io.*;
-import java.util.LinkedList;
-
 /*
         처음에 쓴 방법 : 1에선 0으로 갈 수 있고, 2에선 0, 1로 갈 수 있고, ... 9에선 8로 갈 수 있고 이런 식으로 함수를 호출하게 해서 count하려고 했었다.
         -> 시간 초과. 마지막에 10억으로 나누는데 이건 최소 10억 이상의 count가 존재한다는 뜻이다. count를 더해가며 세면 10억회가 넘어가므로 최소 10초 이상이라는
@@ -27,5 +25,19 @@ public class boj_10844 {
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
         int N = Integer.parseInt(br.readLine());
+        int[][] cache = new int[N][10];
+        long count = 0;
+
+        for(int i = 1; i < 10; i++) cache[0][i] = 1;
+        for(int i = 1; i < N; i++) {
+            cache[i][0] = cache[i - 1][1] % 1000000000;
+            cache[i][9] = cache[i - 1][8] % 1000000000;
+            for(int j = 1; j < 9; j++) cache[i][j] = (cache[i - 1][j - 1] + cache[i - 1][j + 1]) % 1000000000;
+        }
+
+        for(int i = 0; i < 10; i++) count += cache[N - 1][i];
+        bw.write(String.valueOf(count % 1000000000));
+        bw.flush();
+        bw.close();
     }
 }
