@@ -22,7 +22,7 @@ public class boj_3079 {
     }
 
     static long BinSearch(int[] T, int M) {
-        long left = 1, right = T[T.length - 1] * M, middle = 0;
+        long left = 1, right = (long)T[T.length - 1] * M, middle = 0;
         long result = Long.MAX_VALUE;
 
         while(left <= right) {
