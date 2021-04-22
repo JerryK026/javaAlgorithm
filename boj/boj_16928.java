@@ -3,9 +3,19 @@ package boj;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class boj_16928 {
+    static class Token {
+        int idx;
+        int cnt;
+        Token(int idx, int cnt) {
+            this.idx = idx;
+            this.cnt = cnt;
+        }
+    }
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
@@ -13,12 +23,8 @@ public class boj_16928 {
         int M = Integer.parseInt(st.nextToken());
 
         int[] arr = new int[100];
-        int[] cache = new int[100];
-        boolean[] flag = new boolean[100];
-
         for(int i = 0; i < 100; i++) {
             arr[i] = i;
-            cache[i] = Integer.MAX_VALUE;
         }
 
         for(int i = 0; i < N + M; i++) {
@@ -26,44 +32,35 @@ public class boj_16928 {
             arr[Integer.parseInt(st.nextToken()) - 1] = Integer.parseInt(st.nextToken()) - 1;
         }
 
-        cache[0] = 0;
-        for(int i = 1; i < 7; i++) {
-            cache[i] = 1;
-            go(arr, cache, i, flag);
-        }
-
-        for(int i = 7; i < 100; i++) {
-            int tmp = cache[i];
-            for(int j = 6; j >= 0; j--) {
-                tmp = tmp < cache[i - j] ? tmp : cache[i - j];
-            }
-            if(tmp != cache[i]) cache[i] = tmp + 1;
-            if(!go(arr, cache, i, flag)) {
-                i = arr[i];
-            }
-        }
-        System.out.println(cache[99]);
+        bfs(arr);
     }
 
-    public static boolean go(int[] arr, int[] cache, int idx, boolean[] flag) {
-        boolean check = true;
-        if(arr[idx] != idx) {
-            if(cache[arr[idx]] >= cache[idx]) {
-                cache[arr[idx]] = cache[idx];
-                if(arr[idx] < idx && !flag[arr[idx]]) {
-                    check = false;
-                    flag[arr[idx]] = true;
+    static void bfs(int[] arr) {
+        Queue<Token> q = new LinkedList<>();
+        Token t = new Token(0, 0);
+        q.add(t);
+        boolean flag = false;
+
+        while (!q.isEmpty()) {
+            t = q.poll();
+            for(int i = 0; i < 7; i++) {
+                if(t.idx == 100) {
+                    flag = true;
+                    break;
+                }
+                else if(arr[t.idx] != t.idx){
+                    q.add(new Token(arr[t.idx] + i, t.cnt + 1));
+                }
+                else {
+                    q.add(new Token(t.idx + i, t.cnt + 1));
                 }
             }
-            go(arr, cache, arr[idx], flag);
+
+            if(flag) {
+                break;
             }
-        if(check) {
-            // 뱀 안 탔으면 true 반환
-            return true;
         }
-        else {
-            // 뱀 탔으면 false 반환
-            return false;
-        }
+
+        System.out.println(t.cnt);
     }
 }
