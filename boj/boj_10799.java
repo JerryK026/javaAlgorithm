@@ -12,9 +12,10 @@ import java.util.Deque;
 
 // 아니면 Stack은 현재의 상태를 저장한다는 성질을 이용해서, 이전의 index를 읽는 게 아니라, 이전의 정보까지 담는 방식으로 구현할 수도 있다.
 // 이전에 저장한 방식이 (였는지)였는지 저장하고, 현재 저장한 값이 (였는지)였는지 저장하는 식으로도 해결 가능하다.
+// 아니면 변수 flag를 설정해 놓고 사용할 수도 있다.
 
 public class boj_10799 {
-    public static void main(String[] args) throws IOException {
+        public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         Deque<Character> deque = new ArrayDeque<>();
         int count = 0;
