@@ -51,7 +51,7 @@ public class boj_17837 {
 
         for (int i = 0; i < K; i++) {
             st = new StringTokenizer(br.readLine());
-            unit[i] = new Unit(Integer.parseInt(st.nextToken()) - 1, Integer.parseInt(st.nextToken()) - 1, Integer.parseInt(st.nextToken()));
+            unit[i] = new Unit(N - Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()) - 1, Integer.parseInt(st.nextToken()));
             arr[unit[i].y][unit[i].x].s.push(i);
         }
 
@@ -72,19 +72,35 @@ public class boj_17837 {
                         dx -= 1;
                         break;
                     case 3:
-                        dy -= 1;
+                        dy += 1;
                         break;
                     case 4:
-                        dy += 1;
+                        dy -= 1;
                         break;
                 }
                 // 움직일 타일이 2거나 보드 밖이라면 방향만 바꾼다.
                 if (dy < 0 || N <= dy || dx < 0 || N <= dx || arr[dy][dx].val == 2) {
-                    int size = arr[u.y][u.x].s.size();
-                    for (int j = 0; j < size; j++) {
-                        int tmp = arr[u.y][u.x].s.pop();
-                        unit[tmp].dir = unit[tmp].dir % 2 == 0 ? unit[tmp].dir - 1 : unit[tmp].dir + 1;
+                    int tmp = -1;
+                    while (tmp != i) {
+                        tmp = arr[u.y][u.x].s.pop();
+                        if (unit[tmp].dir % 2 == 0) {
+                            if (unit[tmp].dir == 2) dx++;
+                            else dy++;
+                            unit[tmp].dir--;
+                        } else {
+                            if (unit[tmp].dir == 1) dx--;
+                            else dy--;
+                            unit[tmp].dir++;
+                        }
+                        // 움직이려는 곳이 벽이나 2가 아니라면 움직인다.
+                        if (tmp == i) {
+                            if (dy < 0 || N <= dy || dx < 0 || N <= dx || arr[dy][dx].val == 2) {
+                                u.x = dx;
+                                u.y = dy;
+                            }
+                        }
                         q.offer(tmp);
+
                     }
                 }
 
