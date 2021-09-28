@@ -21,7 +21,8 @@ public class chapter12_4 {
         private boolean check(int[][] lock, int klen, int llen) {
             for (int i = 0; i < llen; i++) {
                 for (int j = 0; j < llen; j++) {
-                    if(lock[klen + i - 1][klen + j - 1] == 0) return false;
+                    // == 0이면 return false했을 때는 97점 나왔는데 그 이유는?
+                    if(lock[klen + i - 1][klen + j - 1] != 1) return false;
                 }
             }
             return true;
@@ -30,19 +31,22 @@ public class chapter12_4 {
         public boolean solution(int[][] key, int[][] lock) {
             int klen = key.length;
             int llen = lock.length;
+            // llen + (klen - 1) * 2가 아닌 이유는?
             int[][] newLock = new int[llen + 2 * klen][llen + 2 * klen];
-
-            for (int i = 0; i < llen; i++) {
-                for (int j = 0; j < llen; j++) {
-                    newLock[i + klen - 1][j + klen - 1] = lock[i][j];
-                }
-            }
 
             for (int n = 0; n < 4; n++) {
                 key = keyRotation(key, n);
                 for (int i = 0; i < llen + klen - 1; i++) {
                     for (int j = 0; j < llen + klen - 1; j++) {
 
+                        // newLock 초기화
+                        for (int a = 0; a < llen; a++) {
+                            for (int b = 0; b < llen; b++) {
+                                newLock[a + klen - 1][b + klen - 1] = lock[a][b];
+                            }
+                        }
+
+                        // Lock에 key 넣어보기
                         for (int a = 0; a < klen; a++) {
                             for (int b = 0; b < klen; b++) {
                                 newLock[a + i][b + j] += key[a][b];
@@ -50,12 +54,6 @@ public class chapter12_4 {
                         }
 
                         if(check(newLock, klen, llen)) return true;
-
-                        for (int a = 0; a < klen; a++) {
-                            for (int b = 0; b < klen; b++) {
-                                newLock[a + i][b + j] -= key[a][b];
-                            }
-                        }
 
                     }
                 }
