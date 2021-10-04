@@ -1,123 +1,91 @@
 package this_is_coding_test.chapter12;
 import java.util.*;
 
+// 출처 : https://velog.io/@hyeon930/%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%A8%B8%EC%8A%A4-%EA%B8%B0%EB%91%A5%EA%B3%BC-%EB%B3%B4-%EC%84%A4%EC%B9%98-Java
 public class chapter12_6 {
     static class Solution {
-        static class Struct implements Comparable<Struct> {
-            int x;
-            int y;
-            int kind;
 
-            private Struct(int x, int y, int kind) {
-                this.x = x;
-                this.y = y;
-                this.kind = kind;
-            }
+        static final int PILLAR = 0;
+        static final int BEAM = 1;
+        static final int DESTRUCT = 0;
+        static final int CONSTRUCT = 1;
 
-            @Override
-            public int compareTo(Struct s) {
-                if (this.x < s.x) return -1;
-                else if (this.x > s.x) return 1;
-                else {
-                    return this.y - s.y;
-                }
-            }
-        }
-
-        private boolean check(int[][] arr, int type, int x, int y, int n) {
-            // 기둥은 바닥 위에 있거나 보의 한쪽 끝 부분 위에 있거나, 또는 다른 기둥 위에 있어야 합니다.
-            if (type == 0) {
-                if (y == 0) return true;
-                else if (x > 0 && (arr[x - 1][y] == 1 || arr[x][y] == 1)) return true;
-                else if (y > 0 && arr[x][y - 1] == 0) return true;
-                return false;
-            }
-            // 보는 한쪽 끝 부분이 기둥 위에 있거나, 또는 양쪽 끝 부분이 다른 보와 동시에 연결되어 있어야 합니다.
-            if (y > 0 && (arr[x][y - 1] == 0 || arr[x + 1][y - 1] == 0)) return true;
-            if (x > 0 && (arr[x - 1][y] == 1 && arr[x + 1][y] == 1)) return true;
-
-            return false;
-        }
+        boolean[][] pillars, beams; // 기둥, 보
 
         public int[][] solution(int n, int[][] build_frame) {
-            final int rl = build_frame.length;
-            final int cl = 4;
+            int structureCount = 0;
 
-            // 0부터 n까지의 크기이므로 1을 더한다.
-            n++;
+            pillars = new boolean[n + 3][n + 3];
+            beams = new boolean[n + 3][n + 3];
 
-            int[][] arr = new int[n][n];
-            boolean[][] pil = new boolean[n][n];
-            boolean[][] beam = new boolean[n][n];
+            for(int[] frame : build_frame){
+                int x = frame[0] + 1;
+                int y = frame[1] + 1;
+                int structureType = frame[2];
+                int commandType = frame[3];
 
-            // 정보를 담기 위한 배열인 arr의 값을 채운다. -1은 아무것도 없다는 의미이다.
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    arr[i][j] = -1;
-                }
-            }
-
-            for (int i = 0; i < rl; i++) {
-                int x = build_frame[i][0];
-                int y = build_frame[i][1];
-                int type = build_frame[i][2];
-                int order = build_frame[i][3];
-
-                // 삭제 명령을 수행한다.
-                if (order == 0) {
-                    arr[x][y] = -1;
-                    for (int a = 0; a < n; a++) {
-                        for (int b = 0; b < n; b++) {
-                            if (type == 0) {
-                                if(pil[a][b] && !check(arr, type, a, b, n)) {
-                                    b = n;
-                                    a = n;
-                                    arr[x][y] = type;
-                                }
-                            } else {
-                                if(beam[a][b] && !check(arr, type, a, b, n)) {
-                                    b = n;
-                                    a = n;
-                                    arr[x][y] = type;
-                                }
-                            }
-                        }
+                if(commandType == CONSTRUCT){
+                    if(structureType == PILLAR && canConstructPillar(x, y)){
+                        pillars[x][y] = true;
+                        structureCount++;
                     }
-                    continue;
-                }
+                    if(structureType == BEAM && canConstructBeam(x, y)){
+                        beams[x][y] = true;
+                        structureCount++;
+                    }
+                } else if(commandType == DESTRUCT){
+                    if(structureType == PILLAR){
+                        pillars[x][y] = false;
+                    } else if(structureType == BEAM){
+                        beams[x][y] = false;
+                    }
 
-                // 설치 명령을 수행한다.
-                if (check(arr, type, x, y, n)) arr[x][y] = type;
-                if (type == 0) pil[x][y] = true;
-                else beam[x][y] = true;
-            }
+                    if(canDestruct(x, y, structureType, n)){
+                        structureCount--;
+                        continue;
+                    }
 
-            int count = 0;
-            ArrayList<Struct> sarr = new ArrayList<>();
-
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    // 보 혹은 기둥의 정보가 담긴 경우 담는다.
-                    if (arr[i][j] != -1) {
-                        count++;
-                        sarr.add(new Struct(i, j, arr[i][j]));
+                    if(structureType == PILLAR){
+                        pillars[x][y] = true;
+                    } else if(structureType == BEAM){
+                        beams[x][y] = true;
                     }
                 }
             }
 
-            Collections.sort(sarr);
+            int index = 0;
+            int[][] answer = new int[structureCount][3];
 
-            // count의 수 만큼 원소가 존재할 것
-            int[][] answer = new int[count][3];
-
-            for (int i = 0; i < count; i++) {
-                Struct s = sarr.get(i);
-                answer[i][0] = s.x;
-                answer[i][1] = s.y;
-                answer[i][2] = s.kind;
+            for(int i = 1 ; i <= n + 1 ; ++i){
+                for(int j = 1 ; j <= n + 1 ; ++j){
+                    if(pillars[i][j]) answer[index++] = new int[]{i - 1, j - 1, PILLAR};
+                    if(beams[i][j]) answer[index++] = new int[]{i - 1, j - 1, BEAM};
+                }
             }
-
             return answer;
+        }
+
+        private boolean canConstructPillar(int x, int y){
+            return y == 1 || pillars[x][y - 1] || beams[x][y] || beams[x - 1][y];
+        }
+
+        private boolean canConstructBeam(int x, int y){
+            return pillars[x][y - 1] || pillars[x + 1][y - 1] || (beams[x - 1][y] && beams[x + 1][y]);
+        }
+
+        private boolean canDestruct(int x, int y, int structureType, int n){
+            for(int i = 1 ; i <= n + 1 ; ++i){
+                for(int j = 1 ; j <= n + 1 ; ++j){
+                    if(pillars[i][j] && !canConstructPillar(i, j)){
+                        return false;
+                    }
+                    if(beams[i][j] && !canConstructBeam(i, j)){
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
     }
 }
