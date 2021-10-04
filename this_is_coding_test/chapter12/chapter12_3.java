@@ -1,6 +1,6 @@
 package this_is_coding_test.chapter12;
 
-public class chapter13_3 {
+public class chapter12_3 {
     static class Solution {
         public int solution(String s) {
             int len = s.length();
