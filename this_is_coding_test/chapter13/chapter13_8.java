@@ -1,7 +1,7 @@
 package this_is_coding_test.chapter13;
+import java.util.*;
 
 public class chapter13_8 {
-    import java.util.*;
 
     class Node {
         private int pos1X;
