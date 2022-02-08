@@ -10,7 +10,7 @@ public class boj_15649 {
     static int[] answer;
 
     static void dfs(int depth) {
-        if (depth == N) {
+        if (depth == M) {
             for (int val : answer) {
                 sb.append(val).append(" ");
             }
@@ -18,7 +18,7 @@ public class boj_15649 {
             return;
         }
 
-        for (int i = 0; i < M; i++) {
+        for (int i = 0; i < N; i++) {
             if (!checked[i]) {
                 checked[i] = true;
                 answer[depth] = i + 1;
