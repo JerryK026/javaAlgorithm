@@ -1,50 +1,46 @@
 package boj;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
+import java.io.*;
 
 public class boj_15649 {
-    static ArrayList<String> result = new ArrayList<>();
+    static final StringBuilder sb = new StringBuilder();
+    static int N;
+    static int M;
+    static boolean[] checked;
+    static int[] answer;
 
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        StringBuilder sb = new StringBuilder();
-        int N = Integer.parseInt(st.nextToken());
-        int M = Integer.parseInt(st.nextToken());
-
-        int[] nArr = new int[N];
-        boolean[] check = new boolean[N];
-
-        for(int i = 0; i < N; i++) {
-            nArr[i] = i + 1;
+    static void dfs(int depth) {
+        if (depth == N) {
+            for (int val : answer) {
+                sb.append(val).append(" ");
+            }
+            sb.append("\n");
+            return;
         }
 
-        makeNum(nArr, M, check, new StringBuilder());
-
-        for(int i = 0; i < result.size(); i++) {
-            System.out.println(result.get(i));
-        }
-    }
-
-    static void makeNum(int[] nArr, int M, boolean[] check, StringBuilder sb) {
-        for(int i = 0; i < nArr.length; i++) {
-            if(!check[i]) {
-                sb.append(nArr[i] + " ");
-                check[i] = true;
-                if (sb.length() == 2 * M) {
-                    result.add(sb.toString());
-                    sb.delete(sb.length() - 2, sb.length());
-                    check[i] = false;
-                } else {
-                    makeNum(nArr, M, check, new StringBuilder(sb));
-                    sb.delete(sb.length() - 2, sb.length());
-                    check[i] = false;
-                }
+        for (int i = 0; i < M; i++) {
+            if (!checked[i]) {
+                checked[i] = true;
+                answer[depth] = i + 1;
+                dfs(depth + 1);
+                checked[i] = false;
             }
         }
+        return;
+
+    }
+
+    public static void main(String[] args) throws IOException {
+        final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        final String[] input = br.readLine().split(" ");
+        N = Integer.parseInt(input[0]);
+        M = Integer.parseInt(input[1]);
+
+        checked = new boolean[N];
+        answer = new int[M];
+
+        dfs(0);
+
+        System.out.println(sb.toString());
     }
 }
