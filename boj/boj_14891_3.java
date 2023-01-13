@@ -40,18 +40,23 @@ public class boj_14891_3 {
 
     private static void rotate(int idx, int direction) {
         int dirTmp = direction;
+        int cache = gears[idx][6];
         for (int i = idx; i > 0; i--) {
-            if (gears[i][6] == gears[i - 1][2]) break;
+            if (cache == gears[i - 1][2]) break;
 
             dirTmp *= -1;
+            // 회전하기 전 정보를 기억
+            cache = gears[i - 1][6];
             rotateGear(i - 1, dirTmp);
         }
 
         dirTmp = direction;
+        cache = gears[idx][2];
         for (int i = idx; i < 3; i++) {
-            if (gears[i][2] == gears[i + 1][6]) break;
+            if (cache == gears[i + 1][6]) break;
 
             dirTmp *= -1;
+            cache = gears[i + 1][2];
             rotateGear(i + 1, dirTmp);
         }
 
@@ -59,19 +64,18 @@ public class boj_14891_3 {
     }
 
     private static void rotateGear(int idx, int direction) {
-        int[] gear = gears[idx];
         int[] tmp = new int[8];
 
         // 시계방향
         if (direction == 1) {
-            System.arraycopy(gear, 0, tmp, 1, gear.length - 1);
-            tmp[0] = gear[7];
+            System.arraycopy(gears[idx], 0, tmp, 1, gears[idx].length - 1);
+            tmp[0] = gears[idx][7];
             gears[idx] = tmp;
             return;
         }
 
-        System.arraycopy(gear, 1, tmp, 0, gear.length - 1);
-        tmp[7] = gear[0];
+        System.arraycopy(gears[idx], 1, tmp, 0, gears[idx].length - 1);
+        tmp[7] = gears[idx][0];
         gears[idx] = tmp;
     }
 }
